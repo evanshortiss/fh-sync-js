@@ -128,7 +128,7 @@ declare module SyncClient {
      * Multiple values can be specified as an array and the first valid storage option will be used.
      * Optional. Default: 'html5-filesystem'
      */
-    storage_strategy?: "html5-filesystem" | "dom" | "webkit-sqlite" | "indexed-db" | any;
+    storage_strategy?: "html5-filesystem" | "dom" | "webkit-sqlite" | "indexed-db"
 
     /**
      * Amount of space to request from the HTML5 filesystem API when running in browser
@@ -418,7 +418,7 @@ declare module SyncClient {
    *
    * @param handler - function that wraps underlying hashing method
    */
-  function setHashMethod(method: () => any);
+  function setHashMethod(method: () => any): void;
 }
 
 export = SyncClient;
