@@ -76,13 +76,14 @@ module.exports = function (Lawnchair) {
         request.onupgradeneeded = _onupgradeneeded
         request.onerror = fail;
 
-        document.addEventListener('resume', function () {
-          request = openDb(self.name)
-          request.onsuccess = _onsuccess
-          request.onupgradeneeded = _onupgradeneeded
-          request.onerror = fail;
-
-        }, false);
+        document.addEventListener('deviceready', function () {
+          document.addEventListener('resume', function () {
+            request = openDb(self.name)
+            request.onsuccess = _onsuccess
+            request.onupgradeneeded = _onupgradeneeded
+            request.onerror = fail;
+          }, false);
+        }, false)
       },
 
       save:function(obj, callback) {
