@@ -9,7 +9,9 @@ module.exports = function (Lawnchair) {
       return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
     };
 
-
+    function openDb (name) {
+      getIDB.open(name, 2);
+    }
 
     return {
 
@@ -18,14 +20,17 @@ module.exports = function (Lawnchair) {
       init:function(options, callback) {
         this.idb = getIDB();
         this.waiting = [];
-        var request = this.idb.open(this.name, 2);
+        var request = openDb(this.name)
+
         var self = this;
         var cb = self.fn(self.name, callback);
+
         var win = function(){ return cb.call(self, self); }
         //FEEDHENRY CHANGE TO ALLOW ERROR CALLBACK
         if(options && 'function' === typeof options.fail) fail = options.fail
         //END CHANGE
-        request.onupgradeneeded = function(event){
+
+        function _onupgradeneeded(event){
           self.store = request.result.createObjectStore("teststore", { autoIncrement: true} );
           for (var i = 0; i < self.waiting.length; i++) {
             self.waiting[i].call(self);
@@ -34,7 +39,7 @@ module.exports = function (Lawnchair) {
           win();
         }
 
-        request.onsuccess = function(event) {
+        function _onsuccess(event) {
           self.db = request.result;
 
 
@@ -66,7 +71,18 @@ module.exports = function (Lawnchair) {
             win();
           }
         }
+
+        request.onsuccess = _onsuccess
+        request.onupgradeneeded = _onupgradeneeded
         request.onerror = fail;
+
+        document.addEventListener('resume', function () {
+          request = openDb(self.name)
+          request.onsuccess = _onsuccess
+          request.onupgradeneeded = _onupgradeneeded
+          request.onerror = fail;
+
+        }, false);
       },
 
       save:function(obj, callback) {
